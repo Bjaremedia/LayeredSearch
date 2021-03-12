@@ -75,38 +75,4 @@ class Search
             return new Core($SearchObject);
         }
     }
-
-    /**
-     * Search for order by needles
-     * Will always do deep search to get order id from SQL
-     * Limit is by default unlimited, can be change by changing the config in the SearchObject that is returned
-     * Do multiple ajax calls with Search Object as input to initSearch to load all pages
-     * @param Array/String $needles Needles to search for
-     * @param String $needle_key Target needle key in $needles array (default = needle, used if input $needles is string)
-     * @param Array $search_in Select what types to search by (default = all types that return order id)
-     * @param String $database Target database to search in (default = DATABASE)
-     * @param String $db_server Target database server ip/url (default = null, local database)
-     * @return SearchObject A configured search object, use getResultsForPage() on this
-     */
-    public static function findOrderId(
-        $needle,
-        string $needle_key = 'needle',
-        array $search_in = ['tracking-number', 'sello-order-number', 'sello-order-number-long'],
-        string $database = DATABASE,
-        string $db_server = null
-    ) {
-        if (empty($needle) || empty($needle_key) || empty($search_in)) {
-            return false;
-        }
-        if (!is_array($needle)) {
-            $needles[] = ['needle' => $needle];
-        } else {
-            $needles = $needle;
-        }
-        $Search = self::initSearch(null, $db_server);
-        $Search->addFilters(['needle_type' => $search_in], ['StringCase', 'Sql']);
-        $Search->setConfig(['limit' => 0, 'quick_search' => false, 'database' => $database]);
-        $SearchObject = $Search->prepareSearch($needle_key, $needles);
-        return $SearchObject;
-    }
 }
